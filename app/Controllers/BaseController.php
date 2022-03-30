@@ -2,12 +2,12 @@
 
 namespace App\Controllers;
 
+use CodeIgniter\Config\Config;
 use CodeIgniter\Controller;
 use CodeIgniter\HTTP\CLIRequest;
 use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
-use Config\Validation;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -36,8 +36,7 @@ class BaseController extends Controller
      *
      * @var array
      */
-    protected $helpers = [];
-    protected $validation;
+    protected $helpers = ['url', 'form'];
 
     /**
      * Constructor.
@@ -50,6 +49,6 @@ class BaseController extends Controller
         // Preload any models, libraries, etc, here.
 
         $this->session = \Config\Services::session();
-        $this->validation = \Config\Services::validation();
+        $this->request = \Config\Services::request();
     }
 }
