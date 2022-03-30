@@ -1,0 +1,34 @@
+/* Container */
+.container {
+    background-color: #f6f7fa !important;
+}
+
+/* Sidebar */
+#sidebar {
+    background-color: #333;
+}
+.sidebar-section-group {
+    border-width: 1px;
+    border-color: #fff;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+.sidebar-section-category {
+    font-weight: bold;
+    font-size: 10px;
+    color: white;
+}
+.sidebar-item {
+    color: white;
+}
+.menu-icon {
+    color: white;
+}
+a.active p, a.active .menu-icon {
+    font-weight: bold;
+}
+
+/* Data Table */
+.datatable-heading {
+    background-color: #f8f9fc !important;
+}

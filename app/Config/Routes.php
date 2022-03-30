@@ -2,6 +2,8 @@
 
 namespace Config;
 
+use App\Controllers\Barang;
+
 // Create a new instance of our RouteCollection class.
 $routes = Services::routes();
 
@@ -17,7 +19,7 @@ if (file_exists(SYSTEMPATH . 'Config/Routes.php')) {
  * --------------------------------------------------------------------
  */
 $routes->setDefaultNamespace('App\Controllers');
-$routes->setDefaultController('Home');
+$routes->setDefaultController('Login');
 $routes->setDefaultMethod('index');
 $routes->setTranslateURIDashes(false);
 $routes->set404Override();
@@ -31,7 +33,23 @@ $routes->setAutoRoute(true);
 
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
-$routes->get('/', 'Home::index');
+$routes->get('/', 'Login::index');
+
+// Barang
+// $routes->resource('admin/barang', [
+//     'controller' => 'Barang',
+//     'except' => ['show'],
+// ]);
+$routes->get('admin/barang', 'Barang::index');
+$routes->get('admin/barang/create', 'Barang::create');
+$routes->post('admin/barang/store', 'Barang::store');
+$routes->get('admin/barang/(:segment)/edit', 'Barang::edit/$1');
+$routes->put('admin/barang/(:segment)', 'Barang::update/$1');
+$routes->delete('admin/barang/(:segment)', 'Barang::delete/$1');
+
+
+
+
 
 /*
  * --------------------------------------------------------------------
