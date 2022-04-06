@@ -11,7 +11,6 @@
             </tr>
         </thead>
         <tbody>
-            <?= dd($kategori->getNumRows()) ?>
             <?php foreach ($kategori->getResult() as $i => $kategori) : ?>
                 <tr>
                     <th scope="row"><?= $i + 1 ?></th>

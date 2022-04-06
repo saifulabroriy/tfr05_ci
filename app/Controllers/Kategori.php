@@ -5,6 +5,13 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\KategoriModel;
 use Dompdf\Dompdf;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 
 class Kategori extends BaseController
 {
@@ -119,5 +126,57 @@ class Kategori extends BaseController
         // ob_end_clean();
         $dompdf->stream('Laporan Data Kategori.pdf', array("Attachment" => false));
         exit(0);
+    }
+
+    public function exportExcel()
+    {
+        $cari = $this->request->getVar('q');
+        if (isset($cari)) {
+            $kategori = $this->kategori->builder()->select(
+                '*',
+                false
+            )->like('kategori', "%$cari%")->get();
+        } else {
+            $kategori = $this->kategori->builder()->select(
+                '*',
+                false
+            )->get();
+        }
+
+        $spreadsheet = new Spreadsheet();
+
+        // Merge Cell untuk judul
+        $spreadsheet->getActiveSheet()->mergeCells('A1:C1');
+
+        // Judul
+        $spreadsheet->setActiveSheetIndex(0)
+            ->setCellValue('A1', 'Laporan Data Kategori');
+
+        // Header / Nama Kolom
+        $spreadsheet->setActiveSheetIndex(0)
+            ->setCellValue('A3', 'Kategori')
+            ->setCellValue('B3', 'Tanggal Dibuat')
+            ->setCellValue('C3', 'Tanggal Diperbarui');
+
+        $column = 4;
+        // Data Kategori
+        foreach ($kategori->getResult() as $i => $kategori) {
+            $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue('A' . $column, $kategori->kategori)
+                ->setCellValue('B' . $column, $kategori->created_at)
+                ->setCellValue('C' . $column, $kategori->updated_at);
+            $column++;
+        }
+
+        // Format .xlsx
+        $writer = new Xlsx($spreadsheet);
+        $fileName = 'Laporan Data Kategori';
+
+        // Redirect hasil generate xlsx ke web client
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename=' . $fileName . '.xlsx');
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
     }
 }

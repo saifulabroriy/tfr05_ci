@@ -14,12 +14,12 @@ if (session()->has('success')) : ?>
 <a href="<?= base_url('') ?>/admin/barang/create" class="btn btn-success"><i class="fa fa-plus"></i> Tambah</a>
 <?= form_open(base_url('/admin/barang/exportpdf'), ['class' => 'd-inline']) ?>
 <?php csrf_field() ?>
-<input type="hidden" name="q" value="<?= $q ?><">
+<input type="hidden" name="q" value="<?= $q ?>">
 <button type="submit" class="btn btn-warning"><i class="fa fa-print"></i> Export PDF</button>
 </form>
 <?= form_open(base_url('/admin/barang/exportexcel'), ['class' => 'd-inline']) ?>
 <?php csrf_field() ?>
-<input type="hidden" name="q" value="<?= $q ?><">
+<input type="hidden" name="q" value="<?= $q ?>">
 <button type="submit" class="btn btn-warning"><i class="fa fa-file-excel"></i> Export Excel</button>
 </form>
 

@@ -44,6 +44,7 @@ $routes->put('admin/barang/(:segment)', 'Barang::update/$1');
 $routes->delete('admin/barang/(:segment)', 'Barang::delete/$1');
 $routes->get('admin/barang/previewpdf', 'Barang::previewPDF');
 $routes->post('admin/barang/exportpdf', 'Barang::exportPDF');
+$routes->post('admin/barang/exportexcel', 'Barang::exportExcel');
 
 // Kategori
 $routes->get('admin/kategori', 'Kategori::index');
@@ -54,6 +55,7 @@ $routes->put('admin/kategori/(:segment)', 'Kategori::update/$1');
 $routes->delete('admin/kategori/(:segment)', 'Kategori::delete/$1');
 $routes->get('admin/kategori/previewpdf', 'Kategori::previewPDF');
 $routes->post('admin/kategori/exportpdf', 'Kategori::exportPDF');
+$routes->post('admin/kategori/exportexcel', 'Kategori::exportExcel');
 
 
 

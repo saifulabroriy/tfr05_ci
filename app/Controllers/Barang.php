@@ -7,6 +7,13 @@ use App\Models\BarangModel;
 use App\Models\KategoriModel;
 use CodeIgniter\HTTP\IncomingRequest;
 use Dompdf\Dompdf;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 
 class Barang extends BaseController
 {
@@ -184,5 +191,76 @@ class Barang extends BaseController
         // ob_end_clean();
         $dompdf->stream('Laporan Data Barang.pdf', array("Attachment" => false));
         exit(0);
+    }
+
+    public function exportExcel()
+    {
+        $cari = $this->request->getVar('q');
+        if (isset($cari)) {
+            $barang = $this->barang->builder()->select(
+                'barang.id,
+                kategori.kategori as kategori,
+                barang.nama,
+                barang.harga,
+                barang.stock,
+                barang.created_at,
+                barang.updated_at',
+                false
+            )->join("kategori", "kategori.id = barang.idkategori", '', false)->like('nama', "%$cari%")->get();
+        } else {
+            $barang = $this->barang->builder()->select(
+                'barang.id,
+                kategori.kategori as kategori,
+                barang.nama,
+                barang.harga,
+                barang.stock,
+                barang.created_at,
+                barang.updated_at',
+                false
+            )->join("kategori", "kategori.id = barang.idkategori", '', false)->get();
+        }
+
+        $spreadsheet = new Spreadsheet();
+
+        // Merge Cell untuk judul
+        $spreadsheet->getActiveSheet()->mergeCells('A1:F1');
+
+        // Judul
+        $spreadsheet->setActiveSheetIndex(0)
+            ->setCellValue('A1', 'Laporan Data Barang');
+
+        // Header / Nama Kolom
+        $spreadsheet->setActiveSheetIndex(0)
+            // ->setCellValue('A3', 'Nomor')
+            ->setCellValue('A3', 'Kategori')
+            ->setCellValue('B3', 'Nama Barang ')
+            ->setCellValue('C3', 'Harga')
+            ->setCellValue('D3', 'Stok')
+            ->setCellValue('E3', 'Tanggal Dibuat')
+            ->setCellValue('F3', 'Tanggal Diperbarui');
+
+        $column = 4;
+        // Data Barang
+        foreach ($barang->getResult() as $i => $barang) {
+            $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue('A' . $column, $barang->kategori)
+                ->setCellValue('B' . $column, $barang->nama)
+                ->setCellValue('C' . $column, $barang->harga)
+                ->setCellValue('D' . $column, $barang->stock)
+                ->setCellValue('E' . $column, $barang->created_at)
+                ->setCellValue('F' . $column, $barang->updated_at);
+            $column++;
+        }
+
+        // Format .xlsx
+        $writer = new Xlsx($spreadsheet);
+        $fileName = 'Laporan Data Barang';
+
+        // Redirect hasil generate xlsx ke web client
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename=' . $fileName . '.xlsx');
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
     }
 }
