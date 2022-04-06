@@ -36,16 +36,20 @@ $routes->setAutoRoute(true);
 $routes->get('/', 'Login::index');
 
 // Barang
-// $routes->resource('admin/barang', [
-//     'controller' => 'Barang',
-//     'except' => ['show'],
-// ]);
 $routes->get('admin/barang', 'Barang::index');
 $routes->get('admin/barang/create', 'Barang::create');
 $routes->post('admin/barang/store', 'Barang::store');
 $routes->get('admin/barang/(:segment)/edit', 'Barang::edit/$1');
 $routes->put('admin/barang/(:segment)', 'Barang::update/$1');
 $routes->delete('admin/barang/(:segment)', 'Barang::delete/$1');
+
+// Kategori
+$routes->get('admin/kategori', 'Kategori::index');
+$routes->get('admin/kategori/create', 'Kategori::create');
+$routes->post('admin/kategori/store', 'Kategori::store');
+$routes->get('admin/kategori/(:segment)/edit', 'Kategori::edit/$1');
+$routes->put('admin/kategori/(:segment)', 'Kategori::update/$1');
+$routes->delete('admin/kategori/(:segment)', 'Kategori::delete/$1');
 
 
 

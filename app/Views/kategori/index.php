@@ -9,15 +9,15 @@ if (session()->has('success')) : ?>
     </div>
 <?php endif ?>
 
-<h3 class="mb-3">Data Barang</h3>
+<h3 class="mb-3">Data Kategori</h3>
 
-<a href="<?= base_url('') ?>/admin/barang/create" class="btn btn-success"><i class="fa fa-plus"></i> Tambah</a>
-<form action="<?= base_url('') ?>/admin/barang/exportpdf" class="d-inline" method="POST">
+<a href="<?= base_url('') ?>/admin/kategori/create" class="btn btn-success"><i class="fa fa-plus"></i> Tambah</a>
+<form action="<?= base_url('') ?>/admin/kategori/exportpdf" class="d-inline" method="POST">
     <?php csrf_field() ?>
     <input type="hidden" name="q" value="<?= $q ?><">
     <button type="submit" class="btn btn-warning"><i class="fa fa-print"></i> Export PDF</button>
 </form>
-<form action="<?= base_url('') ?>/admin/barang/exportexcel" class="d-inline" method="POST">
+<form action="<?= base_url('') ?>/admin/kategori/exportexcel" class="d-inline" method="POST">
     <?php csrf_field() ?>
     <input type="hidden" name="q" value="<?= $q ?><">
     <button type="submit" class="btn btn-warning"><i class="fa fa-file-excel"></i> Export Excel</button>
@@ -25,7 +25,7 @@ if (session()->has('success')) : ?>
 
 <div class="datatable-wrapper shadow-lg rounded mt-4">
     <div class="datatable-heading p-4 border-bottom">
-        <b>Data Barang</b>
+        <b>Data Kategori</b>
     </div>
 
     <div class="datatable-content p-4">
@@ -33,7 +33,7 @@ if (session()->has('success')) : ?>
             <div class="d-flex align-items-center">
                 <p class="mb-0">Menampilkan</p>
 
-                <form action="<?= base_url('') ?>/admin/barang" class="mx-2">
+                <form action="<?= base_url('') ?>/admin/kategori" class="mx-2">
                     <input type="hidden" name="page" value="<?= $page ?>">
                     <input type="hidden" name="entri" value="<?= $q ?>">
                     <select onchange="this.form.submit()" name="entri" id="" class="form-control py-0 px-2">
@@ -46,7 +46,7 @@ if (session()->has('success')) : ?>
             </div>
             <div class="d-flex align-items-center">
                 <p class="mb-0 mr-2">Pencarian: </p>
-                <form action="<?= base_url('') ?>/admin/barang" method="get">
+                <form action="<?= base_url('') ?>/admin/kategori" method="get">
                     <input type="hidden" name="page" value="<?= $page ?>">
                     <input type="hidden" name="entri" value="<?= $entri ?>">
                     <input type="text" name="q" id="" class="form-control" value="<?= $q ?>" />
@@ -59,25 +59,19 @@ if (session()->has('success')) : ?>
                 <tr>
                     <th scope="col">No.</th>
                     <th scope="col">Kategori</th>
-                    <th scope="col">Nama</th>
-                    <th scope="col">Harga</th>
-                    <th scope="col">Stok</th>
                     <th scope="col">Aksi</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($barang->getResult() as $i => $barang) : ?>
+                <?php foreach ($kategori->getResult() as $i => $kategori) : ?>
                     <tr>
                         <th scope="row"><?= $i + 1 ?></th>
-                        <td> <?= $barang->kategori ?></td>
-                        <td> <?= $barang->nama ?></td>
-                        <td> <?= $barang->harga ?></td>
-                        <td> <?= $barang->stock ?></td>
+                        <td> <?= $kategori->kategori ?></td>
                         <td>
                             <div class="d-flex">
-                                <a href="<?= base_url('') ?>/admin/barang/<?= $barang->id ?>/edit" class="btn btn-warning mr-2"><i class="fa fa-edit"></i> Edit</a>
+                                <a href="<?= base_url('') ?>/admin/kategori/<?= $kategori->id ?>/edit" class="btn btn-warning mr-2"><i class="fa fa-edit"></i> Edit</a>
 
-                                <?php echo form_open("admin/barang/" . $barang->id) ?>
+                                <?php echo form_open("admin/kategori/" . $kategori->id) ?>
                                 <input type="hidden" name="_method" value="DELETE">
                                 <?php csrf_field() ?>
                                 <button onclick="return confirm('Apakah anda yakin ingin menghapus data?')" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i>
