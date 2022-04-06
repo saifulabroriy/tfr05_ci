@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use App\Models\BarangModel;
 use App\Models\KategoriModel;
 use CodeIgniter\HTTP\IncomingRequest;
+use Dompdf\Dompdf;
 
 class Barang extends BaseController
 {
@@ -118,5 +119,70 @@ class Barang extends BaseController
     {
         $this->barang->delete($id);
         return redirect()->to('admin/barang')->with('success', 'Barang berhasil dihapus');
+    }
+
+    public function previewPDF()
+    {
+        $cari = $this->request->getVar('q');
+        if (isset($cari)) {
+            $barang = $this->barang->builder()->select(
+                'barang.id,
+                kategori.kategori as kategori,
+                barang.nama,
+                barang.harga,
+                barang.stock,
+                barang.created_at,
+                barang.updated_at',
+                false
+            )->join("kategori", "kategori.id = barang.idkategori", '', false)->like('nama', "%$cari%")->get();
+        } else {
+            $barang = $this->barang->builder()->select(
+                'barang.id,
+                kategori.kategori as kategori,
+                barang.nama,
+                barang.harga,
+                barang.stock,
+                barang.created_at,
+                barang.updated_at',
+                false
+            )->join("kategori", "kategori.id = barang.idkategori", '', false)->get();
+        }
+    }
+
+    public function exportPDF()
+    {
+        $cari = $this->request->getVar('q');
+        if (isset($cari)) {
+            $barang = $this->barang->builder()->select(
+                'barang.id,
+                kategori.kategori as kategori,
+                barang.nama,
+                barang.harga,
+                barang.stock,
+                barang.created_at,
+                barang.updated_at',
+                false
+            )->join("kategori", "kategori.id = barang.idkategori", '', false)->like('nama', "%$cari%")->get();
+        } else {
+            $barang = $this->barang->builder()->select(
+                'barang.id,
+                kategori.kategori as kategori,
+                barang.nama,
+                barang.harga,
+                barang.stock,
+                barang.created_at,
+                barang.updated_at',
+                false
+            )->join("kategori", "kategori.id = barang.idkategori", '', false)->get();
+        }
+
+        $dompdf = new Dompdf();
+        $html = view('barang/exportpdf', ['barang' => $barang]);
+        // dd($dompdf);
+        $dompdf->load_html($html);
+        $dompdf->render();
+        // ob_end_clean();
+        $dompdf->stream('Laporan Data Barang.pdf', array("Attachment" => false));
+        exit(0);
     }
 }

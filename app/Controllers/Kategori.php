@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\KategoriModel;
+use Dompdf\Dompdf;
 
 class Kategori extends BaseController
 {
@@ -33,7 +34,7 @@ class Kategori extends BaseController
             $kategori = $this->kategori->builder()->select(
                 '*',
                 false
-            )->like('nama', "%$cari%")->get();
+            )->like('kategori', "%$cari%")->get();
         } else {
             $kategori = $this->kategori->builder()->select(
                 '*',
@@ -89,5 +90,34 @@ class Kategori extends BaseController
     {
         $this->kategori->delete($id);
         return redirect()->to('admin/kategori')->with('success', 'Kategori berhasil dihapus');
+    }
+
+    public function exportPDF()
+    {
+        $cari = $this->request->getVar('q');
+        if (isset($cari)) {
+            $kategori = $this->kategori->builder()->select(
+                '*',
+                false
+            )->like('kategori', "%$cari%")->get();
+        } else {
+            $kategori = $this->kategori->builder()->select(
+                '*',
+                false
+            )->get();
+        }
+
+        $data = [
+            'kategori' => $kategori,
+        ];
+
+        $dompdf = new Dompdf();
+        $html = view('kategori/exportpdf', $data);
+        // dd($dompdf);
+        $dompdf->load_html($html);
+        $dompdf->render();
+        // ob_end_clean();
+        $dompdf->stream('Laporan Data Kategori.pdf', array("Attachment" => false));
+        exit(0);
     }
 }

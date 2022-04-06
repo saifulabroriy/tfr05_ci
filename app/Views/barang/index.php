@@ -12,15 +12,15 @@ if (session()->has('success')) : ?>
 <h3 class="mb-3">Data Barang</h3>
 
 <a href="<?= base_url('') ?>/admin/barang/create" class="btn btn-success"><i class="fa fa-plus"></i> Tambah</a>
-<form action="<?= base_url('') ?>/admin/barang/exportpdf" class="d-inline" method="POST">
-    <?php csrf_field() ?>
-    <input type="hidden" name="q" value="<?= $q ?><">
-    <button type="submit" class="btn btn-warning"><i class="fa fa-print"></i> Export PDF</button>
+<?= form_open(base_url('/admin/barang/exportpdf'), ['class' => 'd-inline']) ?>
+<?php csrf_field() ?>
+<input type="hidden" name="q" value="<?= $q ?><">
+<button type="submit" class="btn btn-warning"><i class="fa fa-print"></i> Export PDF</button>
 </form>
-<form action="<?= base_url('') ?>/admin/barang/exportexcel" class="d-inline" method="POST">
-    <?php csrf_field() ?>
-    <input type="hidden" name="q" value="<?= $q ?><">
-    <button type="submit" class="btn btn-warning"><i class="fa fa-file-excel"></i> Export Excel</button>
+<?= form_open(base_url('/admin/barang/exportexcel'), ['class' => 'd-inline']) ?>
+<?php csrf_field() ?>
+<input type="hidden" name="q" value="<?= $q ?><">
+<button type="submit" class="btn btn-warning"><i class="fa fa-file-excel"></i> Export Excel</button>
 </form>
 
 <div class="datatable-wrapper shadow-lg rounded mt-4">
@@ -56,7 +56,7 @@ if (session()->has('success')) : ?>
 
         <table class="table mt-4">
             <thead>
-                <tr>
+                <tr style="background-color: transparent;">
                     <th scope="col">No.</th>
                     <th scope="col">Kategori</th>
                     <th scope="col">Nama</th>
