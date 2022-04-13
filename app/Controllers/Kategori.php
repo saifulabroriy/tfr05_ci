@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\KategoriModel;
+use App\Models\LogUserModel;
 use Dompdf\Dompdf;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -15,12 +16,14 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 
 class Kategori extends BaseController
 {
-    protected $barang;
+    protected $logUser;
     protected $kategori;
     protected $request;
 
     public function __construct()
     {
+        $this->logUser = new LogUserModel();
+        $this->logUser->protect(false);
         $this->kategori = new KategoriModel();
         $this->kategori->protect(false);
         $this->request = \Config\Services::request();
@@ -69,9 +72,25 @@ class Kategori extends BaseController
 
     public function store()
     {
+        $kategori = $this->request->getPost('kategori');
+
         $this->kategori->save([
-            'kategori' => $this->request->getPost('kategori'),
+            'kategori' => $kategori,
         ]);
+
+        $after = [
+            'kategori' => $kategori,
+        ];
+
+        $log = [
+            'iduser' => session()->get('id'),
+            'menu' => 'Kategori',
+            'keterangan' => 'Menambah Kategori',
+            'before' => '',
+            'after' => json_encode($after),
+        ];
+
+        $this->logUser->insert($log);
 
         return redirect()->to('admin/kategori')->with('success', 'Kategori berhasil ditambahkan');
     }
@@ -86,16 +105,55 @@ class Kategori extends BaseController
 
     public function update($id)
     {
+        $kategori = $this->kategori->find($id);
+
+        $before = [
+            'kategori' => $kategori['kategori']
+        ];
+
+        $kategori = $this->request->getPost('kategori');
+
         $this->kategori->update($id, [
-            'kategori' => $this->request->getPost('kategori'),
+            'kategori' => $kategori,
         ]);
+
+        $after = [
+            'kategori' => $kategori,
+        ];
+
+        $log = [
+            'iduser' => session()->get('id'),
+            'menu' => 'Kategori',
+            'keterangan' => 'Mengubah Kategori',
+            'before' => json_encode($before),
+            'after' => json_encode($after),
+        ];
+
+        $this->logUser->insert($log);
 
         return redirect()->to('admin/kategori')->with('success', 'Kategori berhasil diubah');
     }
 
     public function delete($id)
     {
+        $kategori = $this->kategori->find($id);
+
+        $before = [
+            'kategori' => $kategori['kategori'],
+        ];
+
+        $log = [
+            'iduser' => session()->get('id'),
+            'menu' => 'Kategori',
+            'keterangan' => 'Menghapus Kategori',
+            'before' => json_encode($before),
+            'after' => '',
+        ];
+
         $this->kategori->delete($id);
+
+        $this->logUser->insert($log);
+
         return redirect()->to('admin/kategori')->with('success', 'Kategori berhasil dihapus');
     }
 

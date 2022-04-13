@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\BarangModel;
 use App\Models\KategoriModel;
+use App\Models\LogUserModel;
 use CodeIgniter\HTTP\IncomingRequest;
 use Dompdf\Dompdf;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -19,12 +20,15 @@ class Barang extends BaseController
 {
     protected $barang;
     protected $kategori;
+    protected $logUser;
     protected $request;
 
     public function __construct()
     {
         $this->barang = new BarangModel();
         $this->barang->protect(false);
+        $this->logUser = new LogUserModel();
+        $this->logUser->protect(false);
         $this->kategori = new KategoriModel();
         $this->request = \Config\Services::request();
         session()->start();
@@ -88,12 +92,36 @@ class Barang extends BaseController
 
     public function store()
     {
+        $idkategori = $this->request->getPost('kategori');
+        $nama = $this->request->getPost('nama');
+        $harga = $this->request->getPost('harga');
+        $stock = $this->request->getPost('stok');
+
         $this->barang->save([
-            'idkategori' => $this->request->getPost('kategori'),
-            'nama' => $this->request->getPost('nama'),
-            'harga' => $this->request->getPost('harga'),
-            'stock' => $this->request->getPost('stok'),
+            'idkategori' => $idkategori,
+            'nama' => $nama,
+            'harga' => $harga,
+            'stock' => $stock,
         ]);
+
+        $kategori = $this->kategori->find($idkategori);
+
+        $after = [
+            'kategori' => $kategori['kategori'],
+            'nama' => $nama,
+            'harga' => $harga,
+            'stock' => $stock,
+        ];
+
+        $log = [
+            'iduser' => session()->get('id'),
+            'menu' => 'Barang',
+            'keterangan' => 'Menambah barang',
+            'before' => '',
+            'after' => json_encode($after),
+        ];
+
+        $this->logUser->insert($log);
 
         return redirect()->to('admin/barang')->with('success', 'Barang berhasil ditambahkan');
     }
@@ -112,19 +140,74 @@ class Barang extends BaseController
 
     public function update($id)
     {
+        $barang = $this->barang->find($id);
+        $kategori = $this->kategori->find($barang['idkategori']);
+
+        $before = [
+            'kategori' => $kategori['kategori'],
+            'nama' => $barang['nama'],
+            'harga' => $barang['harga'],
+            'stock' => $barang['stock'],
+        ];
+
+        $idkategori = $this->request->getPost('kategori');
+        $nama = $this->request->getPost('nama');
+        $harga = $this->request->getPost('harga');
+        $stock = $this->request->getPost('stok');
+
         $this->barang->update($id, [
-            'idkategori' => $this->request->getPost('kategori'),
-            'nama' => $this->request->getPost('nama'),
-            'harga' => $this->request->getPost('harga'),
-            'stock' => $this->request->getPost('stok'),
+            'idkategori' => $idkategori,
+            'nama' => $nama,
+            'harga' => $harga,
+            'stock' => $stock,
         ]);
+
+        $kategori = $this->kategori->find($idkategori);
+
+        $after = [
+            'kategori' => $kategori['kategori'],
+            'nama' => $nama,
+            'harga' => $harga,
+            'stock' => $stock,
+        ];
+
+        $log = [
+            'iduser' => session()->get('id'),
+            'menu' => 'Barang',
+            'keterangan' => 'Mengubah barang',
+            'before' => json_encode($before),
+            'after' => json_encode($after),
+        ];
+
+        $this->logUser->insert($log);
 
         return redirect()->to('admin/barang')->with('success', 'Barang berhasil diubah');
     }
 
     public function delete($id)
     {
+        $barang = $this->barang->find($id);
+        $kategori = $this->kategori->find($barang['idkategori']);
+
+        $before = [
+            'kategori' => $kategori['kategori'],
+            'nama' => $barang['nama'],
+            'harga' => $barang['harga'],
+            'stock' => $barang['stock'],
+        ];
+
+        $log = [
+            'iduser' => session()->get('id'),
+            'menu' => 'Barang',
+            'keterangan' => 'Menghapus barang',
+            'before' => json_encode($before),
+            'after' => '',
+        ];
+
         $this->barang->delete($id);
+
+        $this->logUser->insert($log);
+
         return redirect()->to('admin/barang')->with('success', 'Barang berhasil dihapus');
     }
 
