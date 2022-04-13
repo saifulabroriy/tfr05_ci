@@ -9,16 +9,22 @@ use App\Models\PenjualanDetailModel;
 
 class Penjualan extends BaseController
 {
+    public function __construct()
+    {
+        $this->pelanggan = new PelangganModel();
+        $this->request = \Config\Services::request();
+        session()->start();
+    }
     //
     public function create()
     {
-        $iduser = auth()->user()->id;
+        $iduser = session()->get('id');
         $head = session($iduser . '_penjualan');
         // dd($head);
         // session(['cart' => []]);
         // dd(session('cart'));
-        $pelanggan = Pelanggan::all();
-        return view('penjualan.create', [
+        $pelanggan = $this->pelanggan->asObject()->findAll();
+        return view('penjualan/create', [
             'pelanggan' => $pelanggan
         ]);
     }
