@@ -13,6 +13,17 @@
     <!-- Font Awesome Script -->
     <script src="https://kit.fontawesome.com/bc14fa0285.js" crossorigin="anonymous"></script>
     <script src="<?= base_url('front/js/jquery-3.6.0.min.js') ?>"></script>
+    <style>
+        .pagination li a {
+            padding: 8px 16px;
+            font-weight: 500;
+        }
+        .pagination li.active a {
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
 </head>
 
 <body>

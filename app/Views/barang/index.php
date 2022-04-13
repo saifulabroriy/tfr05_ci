@@ -68,7 +68,7 @@ if (session()->has('success')) : ?>
             <tbody>
                 <?php foreach ($barang->getResult() as $i => $barang) : ?>
                     <tr>
-                        <th scope="row"><?= $i + 1 ?></th>
+                        <th scope="row"><?= $offset + $i + 1 ?></th>
                         <td> <?= $barang->kategori ?></td>
                         <td> <?= $barang->nama ?></td>
                         <td> <?= $barang->harga ?></td>
