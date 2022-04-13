@@ -3,10 +3,19 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Models\LogUserModel;
 use App\Models\UserModel;
 
 class Login extends BaseController
 {
+    protected $logUser;
+
+    public function __construct()
+    {
+        $this->logUser = new LogUserModel();
+        $this->logUser->protect(false);
+    }
+
     public function index()
     {
         return view('login/index');
@@ -32,7 +41,19 @@ class Login extends BaseController
                     'role' => $data['role'],
                     'isLoggedIn' => TRUE
                 ];
+
                 $session->set($ses_data);
+
+                $log = [
+                    'iduser' => session()->get('id'),
+                    'menu' => 'Log In',
+                    'keterangan' => 'User telah log in',
+                    'before' => '',
+                    'after' => '',
+                ];
+
+                $this->logUser->insert($log);
+
                 return redirect()->to('/admin/barang');
             } else {
                 $session->setFlashdata('msg', 'Password is incorrect.');
@@ -46,6 +67,16 @@ class Login extends BaseController
 
     public function logout()
     {
+        $log = [
+            'iduser' => session()->get('id'),
+            'menu' => 'Log In',
+            'keterangan' => 'User telah log out',
+            'before' => '',
+            'after' => '',
+        ];
+
+        $this->logUser->insert($log);
+
         $session = session();
         $session->destroy();
         return redirect()->to('/');
