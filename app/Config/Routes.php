@@ -72,7 +72,15 @@ $routes->get('/admin/pelanggan/previewpdf', 'Pelanggan::previewPDF', ['filter' =
 $routes->post('/admin/pelanggan/exportpdf', 'Pelanggan::exportPDF', ['filter' => 'ceklogin']);
 $routes->post('/admin/pelanggan/exportexcel', 'Pelanggan::exportExcel', ['filter' => 'ceklogin']);
 
-
+// Routing Transaksi Penjualan
+$routes->get('/admin/penjualan', 'Penjualan@create', ['filter' => 'ceklogin']);
+$routes->post('/admin/penjualan', 'Penjualan@store', ['filter' => 'ceklogin']);
+$routes->get('/admin/penjualan/pilihbarang', 'Penjualan@pilihBarang', ['filter' => 'ceklogin']);
+$routes->post('/admin/penjualan/centang', 'Penjualan@centang', ['filter' => 'ceklogin']);
+$routes->post('/admin/penjualan/uncentang', 'Penjualan@uncentang', ['filter' => 'ceklogin']);
+$routes->post('/admin/penjualan/setsession', 'Penjualan@setSession', ['filter' => 'ceklogin']);
+$routes->post('/admin/penjualan/hapusbarang', 'Penjualan@hapusBarang', ['filter' => 'ceklogin']);
+$routes->post('/admin/penjualan/cekstok', 'Penjualan@cekStok', ['filter' => 'ceklogin']);
 
 
 
