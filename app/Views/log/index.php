@@ -1,4 +1,4 @@
-<?= $this->extend('layout-pdf') ?>
+<?= $this->extend('layout') ?>
 
 <?= $this->section('content') ?>
 <?php
