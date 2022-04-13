@@ -25,6 +25,8 @@ class Penjualan extends BaseController
     //
     public function create()
     {
+        // $barang = $this->barang->->find(1);
+        // dd($barang);
         $iduser = session()->get('id');
         $head = session()->get($iduser . '_penjualan');
         // dd($head);
@@ -208,8 +210,8 @@ class Penjualan extends BaseController
         $iduser = session()->get('id');
         $id = $data['id'];
 
-        $current = collect(session()->get($iduser . '_cart') ?? []);
-        $filtered = $current->filter(function ($el) use ($id) {
+        $current = (session()->get($iduser . '_cart') ?: []);
+        $filtered = array_filter($current, function ($el) use ($id) {
             return $el['id'] != $id;
         });
         session()->set([$iduser . '_cart' => $filtered]);
@@ -223,17 +225,14 @@ class Penjualan extends BaseController
     {
         $stokCukup = true;
         $message = '';
-        $data = $request->data;
+        $data = $this->request->getPost('data');
         foreach ($data as $item) {
             $id = $item['id'];
             $jml = $item['jml'];
             $nama = $item['nama'];
 
-            $barang = DB::table('barang')
-                ->where('id', '=', $id)
-                // ->where('stock', '>=', $jml)
-                ->get(['id', 'stock']);
-            $stok = $barang[0]->stock;
+            $barang = $this->barang->asObject()->find($id);
+            $stok = $barang->stock;
             if ($stok < $jml) {
                 $stokCukup = false;
                 $message = "Stok tidak cukup untuk barang {$nama}, stok tersisa {$stok}";
