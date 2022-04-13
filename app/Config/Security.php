@@ -6,6 +6,7 @@ use CodeIgniter\Config\BaseConfig;
 
 class Security extends BaseConfig
 {
+
     /**
      * --------------------------------------------------------------------------
      * CSRF Protection Method
@@ -83,7 +84,7 @@ class Security extends BaseConfig
      *
      * @var bool
      */
-    public $regenerate = true;
+    public $regenerate = !true;
 
     /**
      * --------------------------------------------------------------------------
