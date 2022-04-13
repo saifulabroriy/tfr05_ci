@@ -10,9 +10,17 @@ class CekLogin implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
+        // $auth = service('auth');
+
+        // dd($auth->isLoggedIn());
+
+        // if (!$auth->isLoggedIn()) {
+        //     return redirect()->to(site_url('/'));
+        // }
+
         if (!session()->get('isLoggedIn')) {
             return redirect()
-                ->to('/');
+                ->to('/login');
         }
     }
 

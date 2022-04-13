@@ -36,7 +36,7 @@
             </form>
 
             <ul class="navbar-nav ml-auto">
-                <?php if (!empty(session('id'))) : ?>
+                <?php if (!session()->get('id')) : ?>
                     <li class="nav-item">
                         <a href="<?= '#' ?>" class="nav-link">Login</a>
                     </li>
@@ -46,12 +46,12 @@
                     </li>
                 <?php else : ?>
                     <li class="nav-item">
-                        <a href="#" class="nav-link ">{{ auth()->user() ? auth()->user()->nama : 'Guest' }}</a>
+                        <a href="#" class="nav-link "><?= session()->get('nama') ? session()->get('nama') : 'Guest' ?></a>
                     </li>
                     <li class="nav-item">
-                        <form action="/logout" class="d-inline" method="POST" id="form-logout">
-                            @csrf
-                            <a href="#" onclick="logout()" class="nav-link">Logout</a>
+                        <?= form_open(base_url('/logout'), ['class' => 'd-inline', 'id' => 'form-logout']) ?>
+                        <?php csrf_field(); ?>
+                        <a href="#" onclick="logout()" class="nav-link">Logout</a>
                         </form>
                     </li>
 

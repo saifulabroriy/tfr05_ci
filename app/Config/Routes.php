@@ -34,28 +34,32 @@ $routes->setAutoRoute(true);
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 $routes->get('/', 'Login::index');
+$routes->post('/login', 'Login::login');
+$routes->post('/logout', 'Login::logout');
+
+$routes->get('/admin', 'Admin::index', ['filter' => 'ceklogin']);
 
 // Barang
-$routes->get('admin/barang', 'Barang::index');
-$routes->get('admin/barang/create', 'Barang::create');
-$routes->post('admin/barang/store', 'Barang::store');
-$routes->get('admin/barang/(:segment)/edit', 'Barang::edit/$1');
-$routes->put('admin/barang/(:segment)', 'Barang::update/$1');
-$routes->delete('admin/barang/(:segment)', 'Barang::delete/$1');
-$routes->get('admin/barang/previewpdf', 'Barang::previewPDF');
-$routes->post('admin/barang/exportpdf', 'Barang::exportPDF');
-$routes->post('admin/barang/exportexcel', 'Barang::exportExcel');
+$routes->get('/admin/barang', 'Barang::index', ['filter' => 'ceklogin']);
+$routes->get('/admin/barang/create', 'Barang::create', ['filter' => 'ceklogin']);
+$routes->post('/admin/barang/store', 'Barang::store', ['filter' => 'ceklogin']);
+$routes->get('/admin/barang/(:segment)/edit', 'Barang::edit/$1', ['filter' => 'ceklogin']);
+$routes->put('/admin/barang/(:segment)', 'Barang::update/$1', ['filter' => 'ceklogin']);
+$routes->delete('/admin/barang/(:segment)', 'Barang::delete/$1', ['filter' => 'ceklogin']);
+$routes->get('/admin/barang/previewpdf', 'Barang::previewPDF', ['filter' => 'ceklogin']);
+$routes->post('/admin/barang/exportpdf', 'Barang::exportPDF', ['filter' => 'ceklogin']);
+$routes->post('/admin/barang/exportexcel', 'Barang::exportExcel', ['filter' => 'ceklogin']);
 
 // Kategori
-$routes->get('admin/kategori', 'Kategori::index');
-$routes->get('admin/kategori/create', 'Kategori::create');
-$routes->post('admin/kategori/store', 'Kategori::store');
-$routes->get('admin/kategori/(:segment)/edit', 'Kategori::edit/$1');
-$routes->put('admin/kategori/(:segment)', 'Kategori::update/$1');
-$routes->delete('admin/kategori/(:segment)', 'Kategori::delete/$1');
-$routes->get('admin/kategori/previewpdf', 'Kategori::previewPDF');
-$routes->post('admin/kategori/exportpdf', 'Kategori::exportPDF');
-$routes->post('admin/kategori/exportexcel', 'Kategori::exportExcel');
+$routes->get('/admin/kategori', 'Kategori::index', ['filter' => 'ceklogin']);
+$routes->get('/admin/kategori/create', 'Kategori::create', ['filter' => 'ceklogin']);
+$routes->post('/admin/kategori/store', 'Kategori::store', ['filter' => 'ceklogin']);
+$routes->get('/admin/kategori/(:segment)/edit', 'Kategori::edit/$1', ['filter' => 'ceklogin']);
+$routes->put('/admin/kategori/(:segment)', 'Kategori::update/$1', ['filter' => 'ceklogin']);
+$routes->delete('/admin/kategori/(:segment)', 'Kategori::delete/$1', ['filter' => 'ceklogin']);
+$routes->get('/admin/kategori/previewpdf', 'Kategori::previewPDF', ['filter' => 'ceklogin']);
+$routes->post('/admin/kategori/exportpdf', 'Kategori::exportPDF', ['filter' => 'ceklogin']);
+$routes->post('/admin/kategori/exportexcel', 'Kategori::exportExcel');
 
 
 

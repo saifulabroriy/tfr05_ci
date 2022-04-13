@@ -188,30 +188,30 @@
             <div class="row align-items-center">
                 <div class="col-md-8 col-md-offset-2">
                     <!-- login_wrapper -->
-                    <form class="login_wrapper" method="POST" action="<?= base_url('') ?>/login">
-                        <?php helper('form'); ?>
-                        <?php $validation = \Config\Services::validation(); ?>
-                        <?php csrf_field(); ?>
-                        <h2>Login</h2>
-                        <div class="formsix-pos">
-                            <div class="form-group i-username">
-                                <input type="text" class="form-control @error('username') is-invalid @enderror" required="" id="username2" placeholder="Username *" name="username" value="<?= old('username') ?>">
-                                <?php if ($validation->getError('username')) : ?>
-                                    <div class="invalid-feedback mt-2"><?= $error = $validation->getError('username'); ?></div>
-                                <?php endif ?>
-                            </div>
+                    <?= form_open(base_url('/login'), ['class' => 'login_wrapper']) ?>
+                    <?php helper('form'); ?>
+                    <?php $validation = \Config\Services::validation(); ?>
+                    <?php csrf_field(); ?>
+                    <h2>Login</h2>
+                    <div class="formsix-pos">
+                        <div class="form-group i-username">
+                            <input type="text" class="form-control @error('username') is-invalid @enderror" required="" id="username2" placeholder="Username *" name="username" value="<?= old('username') ?>">
+                            <?php if ($validation->getError('username')) : ?>
+                                <div class="invalid-feedback mt-2"><?= $error = $validation->getError('username'); ?></div>
+                            <?php endif ?>
                         </div>
-                        <div class="formsix-e">
-                            <div class="form-group i-password">
-                                <input type="password" class="form-control @error('password') is-invalid @enderror" required="" id="password2" placeholder="Password *" name="password">
-                                <?php if ($validation->getError('password')) : ?>
-                                    <div class="invalid-feedback mt-2"><?= $error = $validation->getError('password'); ?></div>
-                                <?php endif ?>
-                            </div>
+                    </div>
+                    <div class="formsix-e">
+                        <div class="form-group i-password">
+                            <input type="password" class="form-control @error('password') is-invalid @enderror" required="" id="password2" placeholder="Password *" name="password">
+                            <?php if ($validation->getError('password')) : ?>
+                                <div class="invalid-feedback mt-2"><?= $error = $validation->getError('password'); ?></div>
+                            <?php endif ?>
                         </div>
-                        <div class="login_btn_wrapper">
-                            <button type="submit" class="btn btn-primary login_btn btn-block"> Login </button>
-                        </div>
+                    </div>
+                    <div class="login_btn_wrapper">
+                        <button type="submit" class="btn btn-primary login_btn btn-block"> Login </button>
+                    </div>
                     </form> <!-- /.login_wrapper-->
                 </div>
 
