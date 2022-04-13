@@ -61,6 +61,17 @@ $routes->get('/admin/kategori/previewpdf', 'Kategori::previewPDF', ['filter' => 
 $routes->post('/admin/kategori/exportpdf', 'Kategori::exportPDF', ['filter' => 'ceklogin']);
 $routes->post('/admin/kategori/exportexcel', 'Kategori::exportExcel');
 
+// Pelanggan
+$routes->get('/admin/pelanggan', 'Pelanggan::index', ['filter' => 'ceklogin']);
+$routes->get('/admin/pelanggan/create', 'Pelanggan::create', ['filter' => 'ceklogin']);
+$routes->post('/admin/pelanggan/store', 'Pelanggan::store', ['filter' => 'ceklogin']);
+$routes->get('/admin/pelanggan/(:segment)/edit', 'Pelanggan::edit/$1', ['filter' => 'ceklogin']);
+$routes->put('/admin/pelanggan/(:segment)', 'Pelanggan::update/$1', ['filter' => 'ceklogin']);
+$routes->delete('/admin/pelanggan/(:segment)', 'Pelanggan::delete/$1', ['filter' => 'ceklogin']);
+$routes->get('/admin/pelanggan/previewpdf', 'Pelanggan::previewPDF', ['filter' => 'ceklogin']);
+$routes->post('/admin/pelanggan/exportpdf', 'Pelanggan::exportPDF', ['filter' => 'ceklogin']);
+$routes->post('/admin/pelanggan/exportexcel', 'Pelanggan::exportExcel', ['filter' => 'ceklogin']);
+
 
 
 
