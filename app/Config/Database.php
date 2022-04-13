@@ -35,7 +35,7 @@ class Database extends Config
         'hostname' => 'localhost',
         'username' => 'root',
         'password' => '',
-        'database' => 'tfr05_ci',
+        'database' => 'tfr05',
         'DBDriver' => 'MySQLi',
         'DBPrefix' => '',
         'pConnect' => false,
