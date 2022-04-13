@@ -7,7 +7,9 @@ $iduser = $s->get('id');
 $entri = $request->getGet('entri', 10);
 $currentPage = $request->getGet('page', 1);
 $offset = ($currentPage - 1) * $entri;
-$cart = $s->get($iduser . '_cart') ?? [];
+$cart = $s->get($iduser . '_cart') ?: [];
+
+// dd(json_encode($data));
 $idbarang_in_cart = array_map(function ($el) {
     return $el['id'];
 }, $cart);
@@ -85,7 +87,7 @@ $idbarang_in_cart = array_map(function ($el) {
                         <td><?= $barang->stock ?></td>
                         <td>
                             <div class="form-check">
-                                <input class="form-check-input position-static centang" type="checkbox" id="blankCheckbox" value="<?= json_encode($barang) ?>" aria-label="..." <?= $checked ?>>
+                                <input class="form-check-input position-static centang" type="checkbox" id="blankCheckbox" value="<?= htmlspecialchars(json_encode($barang), ENT_QUOTES, 'UTF-8'); ?>" aria-label="..." <?= $checked ?>>
                             </div>
                         </td>
                     </tr>
@@ -101,7 +103,7 @@ $idbarang_in_cart = array_map(function ($el) {
 <script>
     $(".centang").change(function(e) {
         let value = JSON.parse($(this).val())
-        // console.log("value", value)
+        // console.log("value", value);return
         let url = ""
         if (this.checked) {
             // Set ke session
@@ -115,7 +117,7 @@ $idbarang_in_cart = array_map(function ($el) {
             type: "POST",
             url,
             data: ({
-                '_token': "<?= csrf_token() ?>",
+                '<?= csrf_token() ?>': "<?= csrf_hash() ?>",
                 ...value
             }),
             dataType: "JSON",

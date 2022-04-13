@@ -2,8 +2,8 @@
 // dd(auth()->user());
 $s = session();
 $iduser = $s->get('id');
-$session_penjualan = $s->get($iduser . '_penjualan') ?? [];
-$cart = $s->get($iduser . '_cart') ?? [];
+$session_penjualan = $s->get($iduser . '_penjualan') ?: [];
+$cart = $s->get($iduser . '_cart') ?: [];
 // dd($session_penjualan);
 $grandTotal = 0;
 foreach ($cart as $i => $barang) {
@@ -117,7 +117,7 @@ foreach ($cart as $i => $barang) {
                     <?php
                     $subtotal = $barang['jumlah'] * $barang['harga'];
                     ?>
-                    <tr data-value="<?= json_encode($barang) ?>">
+                    <tr data-value="<?= htmlspecialchars(json_encode($barang), ENT_QUOTES, 'UTF-8') ?>">
                         <td>
                             <input type="hidden" name="id" value="<?= $barang['id'] ?>">
                             <button type="button" class="btn btn-sm btn-danger hapus"><i style="" class="fa fa-trash"></i></button>
@@ -125,7 +125,7 @@ foreach ($cart as $i => $barang) {
                         <td><?= $barang['nama'] ?></td>
                         <td><?= number_format($barang['harga']) ?></td>
                         <td>
-                            <input type="number" value="<?= old('jumlah_' . $barang['id'], $barang['jumlah']) ?>" class="form-control cart-jumlah" style="width:auto" data-value="<?= json_encode($barang) ?>" name="jumlah_<?= $barang['id'] ?>" min="1">
+                            <input type="number" value="<?= old('jumlah_' . $barang['id'], $barang['jumlah']) ?>" class="form-control cart-jumlah" style="width:auto" data-value="<?= htmlspecialchars(json_encode($barang), ENT_QUOTES, 'UTF-8') ?>" name="jumlah_<?= $barang['id'] ?>" min="1">
                         </td>
                         <td class="cart-subtotal"><?= number_format($subtotal) ?></td>
                     </tr>

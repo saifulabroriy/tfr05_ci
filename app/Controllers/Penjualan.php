@@ -42,7 +42,7 @@ class Penjualan extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store()
     {
         $iduser = session()->get('id');
         $cart = collect(session()->get($iduser . '_cart') ?? []);
@@ -59,7 +59,7 @@ class Penjualan extends BaseController
         $head->nofaktur = $this->getNofaktur();
         $head->bayar = $request->input("bayar");
         $head->kembali = str_replace(",", "", $request->input("kembali"));
-        // dd($request->all(), $cart, $head);
+        // dd($this->request->getPost(), $cart, $head);
         $after = [
             'nofaktur' => $head->nofaktur,
         ];
@@ -118,8 +118,9 @@ class Penjualan extends BaseController
     public function pilihBarang()
     {
         $cari = $this->request->getGet('q');
-        $entri = $this->request->getGet('entri') ?? 10;
-        $page = $this->request->getGet('page') ?? 1;
+        $entri = $this->request->getGet('entri') ?: 10;
+        $page = $this->request->getGet('page') ?: 1;
+        // dd($page, $entri);
         $offset = ($page - 1) * $entri;
 
         $dataCount = $this->barang->builder()->select(['COUNT(barang.id) AS jml'])
@@ -151,15 +152,15 @@ class Penjualan extends BaseController
         ]);
     }
 
-    public function centang(Request $request)
+    public function centang()
     {
         // $res = [
         //     'status' => 1,
         //     'message' => 'Berhasil Gan',
-        //     'data' => $request->all()
+        //     'data' => $this->request->getPost()
         // ];
 
-        $barang = $request->all();
+        $barang = $this->request->getPost();
         $iduser = session()->get('id');
         $current = session()->get($iduser . '_cart') ?? [];
 
@@ -171,13 +172,13 @@ class Penjualan extends BaseController
         ]);
     }
 
-    public function uncentang(Request $request)
+    public function uncentang()
     {
-        $barang = $request->all();
+        $barang = $this->request->getPost();
         $iduser = session()->get('id');
-        $current = collect(session()->get($iduser . '_cart') ?? []); // Getting old data
+        $current = session()->get($iduser . '_cart') ?? []; // Getting old data
 
-        $filtered = $current->filter(function ($el) use ($barang) {
+        $filtered = array_filter($current, function ($el) use ($barang) {
             return $el['id'] != $barang['id'];
         });
         session()->set([$iduser . '_cart' => $filtered]);
@@ -201,9 +202,9 @@ class Penjualan extends BaseController
         ]);
     }
 
-    public function hapusBarang(Request $request)
+    public function hapusBarang()
     {
-        $data = $request->all();
+        $data = $this->request->getPost();
         $iduser = session()->get('id');
         $id = $data['id'];
 
@@ -218,7 +219,7 @@ class Penjualan extends BaseController
         ]);
     }
 
-    public function cekStok(Request $request)
+    public function cekStok()
     {
         $stokCukup = true;
         $message = '';
