@@ -69,7 +69,7 @@ class Login extends BaseController
     {
         $log = [
             'iduser' => session()->get('id'),
-            'menu' => 'Log In',
+            'menu' => 'Log Out',
             'keterangan' => 'User telah log out',
             'before' => '',
             'after' => '',
