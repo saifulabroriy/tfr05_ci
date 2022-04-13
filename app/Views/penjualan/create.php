@@ -11,7 +11,7 @@ foreach ($cart as $i => $barang) {
 }
 
 // dd(old('tgl', $session_penjualan['tgl']))
-// dd($pelanggan);
+// dd($grandTotal);
 
 ?>
 
@@ -158,7 +158,7 @@ foreach ($cart as $i => $barang) {
             type: "POST",
             url,
             data: ({
-                '_token': "<?= csrf_token() ?>",
+                'csrf_test_name': "<?= csrf_hash() ?>",
                 ...value
             }),
             dataType: "JSON",
@@ -239,7 +239,7 @@ foreach ($cart as $i => $barang) {
             type: "POST",
             url,
             data: ({
-                '_token': "<?= csrf_token() ?>",
+                'csrf_test_name': "<?= csrf_hash() ?>",
                 id: barang.id
             }),
             dataType: "JSON",
@@ -315,7 +315,7 @@ foreach ($cart as $i => $barang) {
             type: "POST",
             url: "<?= base_url('') . '/admin/penjualan/cekstok' ?>",
             data: ({
-                '_token': "<?= csrf_token() ?>",
+                'csrf_test_name': "<?= csrf_hash() ?>",
                 data: barangCek
             }),
             dataType: "JSON",

@@ -3,15 +3,22 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Models\BarangModel;
 use App\Models\PelangganModel;
 use App\Models\PenjualanModel;
 use App\Models\PenjualanDetailModel;
+use Exception;
 
 class Penjualan extends BaseController
 {
+    protected $barang;
+    protected $pelanggan;
+    protected $request;
+
     public function __construct()
     {
         $this->pelanggan = new PelangganModel();
+        $this->barang = new BarangModel();
         $this->request = \Config\Services::request();
         session()->start();
     }
@@ -19,7 +26,7 @@ class Penjualan extends BaseController
     public function create()
     {
         $iduser = session()->get('id');
-        $head = session($iduser . '_penjualan');
+        $head = session()->get($iduser . '_penjualan');
         // dd($head);
         // session(['cart' => []]);
         // dd(session('cart'));
@@ -37,8 +44,8 @@ class Penjualan extends BaseController
      */
     public function store(Request $request)
     {
-        $iduser = auth()->user()->id;
-        $cart = collect(session($iduser . '_cart', []));
+        $iduser = session()->get('id');
+        $cart = collect(session()->get($iduser . '_cart') ?? []);
         $cart = $cart->map(function ($item) use ($request) {
             $item['jumlah'] = $request->input("jumlah_" . $item['id']);
             return $item;
@@ -89,8 +96,8 @@ class Penjualan extends BaseController
             DB::table('log_user')->insert($log);
             DB::commit();
             // Clear Session
-            session([$iduser . '_cart' => []]);
-            session([$iduser . '_penjualan' => []]);
+            session()->set([$iduser . '_cart' => []]);
+            session()->set([$iduser . '_penjualan' => []]);
             return redirect('/admin/penjualan')->with('success', 'Penjualan berhasil');
         } catch (Exception $th) {
             DB::rollBack();
@@ -110,45 +117,37 @@ class Penjualan extends BaseController
 
     public function pilihBarang()
     {
-        $cari = request('q');
-        $entri = request('entri', 10);
+        $cari = $this->request->getGet('q');
+        $entri = $this->request->getGet('entri') ?? 10;
+        $page = $this->request->getGet('page') ?? 1;
+        $offset = ($page - 1) * $entri;
 
-        $barang = Barang::select(
-            "barang.id",
-            "kategori.kategori as kategori",
-            "barang.nama",
-            "barang.harga",
-            "barang.stock",
-            "barang.created_at",
-            "barang.updated_at"
-        )->join("kategori", "kategori.id", "=", "barang.idkategori")
-            ->when(!empty($cari), function ($query) use ($cari) {
-                return $query->where('nama', 'like', "%$cari%");
-            })
-            ->paginate($entri)
-            ->withQueryString();
-        // if ($cari) {
+        $dataCount = $this->barang->builder()->select(['COUNT(barang.id) AS jml'])
+            ->join("kategori", "kategori.id = barang.idkategori", '', false)
+            ->like('nama', "%$cari%")
+            ->get()
+            ->getRow()
+            ->jml;
+        $barang = $this->barang->builder()->select(
+            'barang.id,
+            kategori.kategori as kategori,
+            barang.nama,
+            barang.harga,
+            barang.stock,
+            barang.created_at,
+            barang.updated_at',
+            false
+        )->join("kategori", "kategori.id = barang.idkategori", '', false)
+            ->like('nama', "%$cari%")
+            ->get($entri, $offset)
+            ->getResult();
 
-        // } else {
-        //     $barang = barang::select(
-        //         "barang.id",
-        //         "kategori.kategori as kategori",
-        //         "barang.nama",
-        //         "barang.harga",
-        //         "barang.stock",
-        //         "barang.created_at",
-        //         "barang.updated_at"
-        //     )->join("kategori", "kategori.id", "=", "barang.idkategori")->paginate($entri)->withQueryString();
-        // }
-        // dd($barang);
-        //
-        $queryParams = request()->all();
-        $builtQuery = http_build_query($queryParams);
-        // dd($builtQuery);
+        $pager = service('pager'); //instantiate pager
+        $pager->makeLinks($page, $entri, $dataCount);
 
         return view('penjualan/pilihbarang', [
             'data' => $barang,
-            'params' => $builtQuery // Passing query params saat ini
+            'pager' => $pager,
         ]);
     }
 
@@ -161,11 +160,11 @@ class Penjualan extends BaseController
         // ];
 
         $barang = $request->all();
-        $iduser = auth()->user()->id;
-        $current = session($iduser . '_cart', []);
+        $iduser = session()->get('id');
+        $current = session()->get($iduser . '_cart') ?? [];
 
         $current[] = array_merge($barang, ['jumlah' => 1]); // Push new data
-        session([$iduser . '_cart' => $current]);
+        session()->set([$iduser . '_cart' => $current]);
         return json_encode([
             'status' => 1,
             'message' => "Berhasil centang"
@@ -175,25 +174,25 @@ class Penjualan extends BaseController
     public function uncentang(Request $request)
     {
         $barang = $request->all();
-        $iduser = auth()->user()->id;
-        $current = collect(session($iduser . '_cart', [])); // Getting old data
+        $iduser = session()->get('id');
+        $current = collect(session()->get($iduser . '_cart') ?? []); // Getting old data
 
         $filtered = $current->filter(function ($el) use ($barang) {
             return $el['id'] != $barang['id'];
         });
-        session([$iduser . '_cart' => $filtered]);
+        session()->set([$iduser . '_cart' => $filtered]);
         return json_encode([
             'status' => 1,
             'message' => "Berhasil Uncentang"
         ]);
     }
 
-    public function setSession(Request $request)
+    public function setSession()
     {
-        $data = $request->all();
-        $iduser = auth()->user()->id;
+        $data = $this->request->getPost();
+        $iduser = session()->get('id');
 
-        session([$iduser . '_penjualan' => $data]);
+        session()->set([$iduser . '_penjualan' => $data]);
         return json_encode([
             'status' => 1,
             'message' => "Berhasil set session",
@@ -205,14 +204,14 @@ class Penjualan extends BaseController
     public function hapusBarang(Request $request)
     {
         $data = $request->all();
-        $iduser = auth()->user()->id;
+        $iduser = session()->get('id');
         $id = $data['id'];
 
-        $current = collect(session($iduser . '_cart', []));
+        $current = collect(session()->get($iduser . '_cart') ?? []);
         $filtered = $current->filter(function ($el) use ($id) {
             return $el['id'] != $id;
         });
-        session([$iduser . '_cart' => $filtered]);
+        session()->set([$iduser . '_cart' => $filtered]);
         return json_encode([
             'status' => 1,
             'message' => "Berhasil Hapus Keranjang"
