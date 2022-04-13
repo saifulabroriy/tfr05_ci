@@ -82,7 +82,10 @@ $routes->post('/admin/penjualan/setsession', 'Penjualan@setSession', ['filter' =
 $routes->post('/admin/penjualan/hapusbarang', 'Penjualan@hapusBarang', ['filter' => 'ceklogin']);
 $routes->post('/admin/penjualan/cekstok', 'Penjualan@cekStok', ['filter' => 'ceklogin']);
 
-
+// Log
+$routes->get('/admin/log', 'Log::index', ['filter' => 'ceklogin']);
+$routes->post('/admin/log/exportpdf', 'Log::exportPDF', ['filter' => 'ceklogin']);
+$routes->get('/admin/log/previewpdf', 'Log::previewPDF', ['filter' => 'ceklogin']);
 
 /*
  * --------------------------------------------------------------------
