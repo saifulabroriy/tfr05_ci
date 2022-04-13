@@ -37,45 +37,50 @@ class Barang extends BaseController
     public function index()
     {
         // Mendapatkan Query Params
-        $cari = $this->request->getVar('q');
+        $cari = $this->request->getVar('q')??'';
         $entri = $this->request->getVar('entri');
-        $page = $this->request->getVar('page');
+        $page = $this->request->getVar('page') ?? 1;
         $entri = isset($entri) ? $entri : 10;
+        $offset = ($page - 1) * $entri;
+
 
         // Filter Pencarian
         // NOTE : kurang pagination
-        if (isset($cari)) {
-            $barang = $this->barang->builder()->select(
-                'barang.id,
-                kategori.kategori as kategori,
-                barang.nama,
-                barang.harga,
-                barang.stock,
-                barang.created_at,
-                barang.updated_at',
-                false
-            )->join("kategori", "kategori.id = barang.idkategori", '', false)->like('nama', "%$cari%")->get();
-        } else {
-            $barang = $this->barang->builder()->select(
-                'barang.id,
-                kategori.kategori as kategori,
-                barang.nama,
-                barang.harga,
-                barang.stock,
-                barang.created_at,
-                barang.updated_at',
-                false
-            )->join("kategori", "kategori.id = barang.idkategori", '', false)->get();
-        }
+        $dataCount=0;
+        $dataCount = $this->barang->builder()->select(['COUNT(barang.id) AS jml'])
+            ->join("kategori", "kategori.id = barang.idkategori", '', false)
+            ->like('nama', "%$cari%")
+            ->get()
+            ->getRow()
+            ->jml;
+        $barang = $this->barang->builder()->select(
+            'barang.id,
+            kategori.kategori as kategori,
+            barang.nama,
+            barang.harga,
+            barang.stock,
+            barang.created_at,
+            barang.updated_at',
+            false
+        )->join("kategori", "kategori.id = barang.idkategori", '', false)
+            ->like('nama', "%$cari%")
+            ->get($entri, $offset);
+        // dd($dataCount);
+        
+        $pager = service('pager'); //instantiate pager
+        $pager->makeLinks($page, $entri, $dataCount);
+        // dd($pager);
 
         // Data yang akan dikirim
+        // dd($this->barang->paginate($entri));
         $data = [
             'jumlah_barang' => $this->barang->paginate($entri),
-            'pager' => $this->barang->pager,
+            'pager' => $pager,
             'q' => $cari,
             'entri' => $entri,
             'page' => $page,
             'barang' => $barang,
+            'offset' => $offset
         ];
 
         return view('barang/index', $data);
