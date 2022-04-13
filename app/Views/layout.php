@@ -120,11 +120,12 @@
     <!-- Axios CDN -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <!-- Opening Tag Container -->
+    <?php $this->request = \Config\Services::request(); ?>
     <div id="main-wrap" class="d-flex">
         <div id="sidebar" class="p-3" style="flex:0.15">
             <div class="sidebar-section-group border-top border-bottom border-light">
                 <p class="sidebar-section-category mb-2">DASHBOARD</p>
-                <a href="<?= base_url('') ?>/admin" class="d-block py-2 {{ Request::is('admin') ? 'active' : '' }}">
+                <a href="<?= base_url('') ?>/admin" class="d-block py-2 <?= $this->request->getPath() == '/admin' ? 'active' : '' ?>">
                     <i class="fa fa-home menu-icon"></i>
                     <p class="sidebar-item mb-0 d-inline">Home</p>
                 </a>
@@ -132,13 +133,35 @@
 
             <div class="sidebar-section-group border-top border-bottom border-light">
                 <p class="sidebar-section-category mb-2">MASTER</p>
-                <a href="<?= base_url('') ?>/admin/kategori" class="d-block py-2 {{ Request::is('admin/kategori') ? 'active' : '' }}">
+                <a href="<?= base_url('') ?>/admin/kategori" class="d-block py-2 <?= $this->request->getPath() == '/admin/kategori' ? 'active' : '' ?>">
                     <i class="fa fa-chart-bar menu-icon"></i>
                     <p class="sidebar-item mb-0 d-inline">Kategori</p>
                 </a>
-                <a href="<?= base_url('') ?>/admin/barang" class="d-block py-2 {{ Request::is('admin/barang') ? 'active' : '' }}">
+                <a href="<?= base_url('') ?>/admin/barang" class="d-block py-2 <?= $this->request->getPath() == '/admin/barang' ? 'active' : '' ?>">
                     <i class="fa fa-briefcase menu-icon"></i>
                     <p class="sidebar-item mb-0 d-inline">Barang</p>
+                </a>
+                <a href="<?= base_url('') ?>/admin/pelanggan" class="d-block py-2 <?= $this->request->getPath() == '/admin/pelanggan' ? 'active' : '' ?>">
+                    <i class="fa fa-briefcase menu-icon"></i>
+                    <p class="sidebar-item mb-0 d-inline">Pelanggan</p>
+                </a>
+            </div>
+
+            <!-- {{-- Menu-menu Transaksi --}} -->
+            <div class="sidebar-section-group border-top border-bottom border-light">
+                <p class="sidebar-section-category mb-2">TRANSAKSI</p>
+                <a href="<?= base_url('') ?>/admin/penjualan" class="d-block py-2 <?= $this->request->getPath() == '/admin/penjualan' ? 'active' : '' ?>">
+                    <i class="fa fa-solid fa-cash-register menu-icon"></i>
+                    <p class="sidebar-item mb-0 d-inline">Penjualan</p>
+                </a>
+            </div>
+
+            <!-- {{-- Menu Logging --}} -->
+            <div class="sidebar-section-group border-top border-bottom border-light">
+                <p class="sidebar-section-category mb-2">LOGGING</p>
+                <a href="<?= base_url('') ?>/admin/log" class="d-block py-2 <?= $this->request->getPath() == '/admin/log' ? 'active' : '' ?>">
+                    <i class="fa fa-solid fa-book menu-icon"></i>
+                    <p class="sidebar-item mb-0 d-inline">Log User</p>
                 </a>
             </div>
 
