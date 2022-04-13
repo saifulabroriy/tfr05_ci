@@ -8,34 +8,36 @@ class Admin extends BaseController
 {
     public function index()
     {
+        $db = \Config\Database::connect();
+
         // Mengambil 10 barang dengan pengadaan terbanyak.
-        $barangUrutStok = $this->db->table('barang')
+        $barangUrutStok = $db->table('barang')->select('id, nama, stock')
             ->orderBy('stock', 'desc')
             ->limit(10)
-            ->get(['id', 'nama', 'stock']);
+            ->get();
 
-        $kategoriUrutStok = $this->db->table('barang', 'b')
-            ->join('kategori as k', 'k.id', '=', 'b.idkategori')
-            ->groupBy(['b.idkategori', 'k.kategori'])
+        $kategoriUrutStok = $db->table('barang')->select('barang.idkategori, kategori.kategori as kategori, SUM(barang.stock) AS jumlah_stok')
+            ->join("kategori", "kategori.id = barang.idkategori", '', false)
+            ->groupBy(['barang.idkategori', 'kategori'])
             ->orderBy('jumlah_stok', 'desc')
-            ->get(['b.idkategori', 'k.kategori', DB::raw('sum(b.stock) as jumlah_stok')]);
+            ->get();
 
         // Mengambil Data Barang Terlaris.
-        $barangTerlaris = DB::table('penjualan_detail', 'pd')
-            ->join('barang as b2', 'b2.id', '=', 'pd.idbarang')
-            ->groupBy(['pd.idbarang', 'b2.nama'])
+        $barangTerlaris = $db->table('penjualan_detail')->select('penjualan_detail.idbarang, SUM(penjualan_detail.jumlah) AS terjual, barang.nama')
+            ->join('barang', 'barang.id = penjualan_detail.idbarang', '', false)
+            ->groupBy(['penjualan_detail.idbarang', 'barang.nama'])
             ->orderBy('terjual', 'desc')
             ->limit(10)
-            ->get(['idbarang', DB::raw('SUM(pd.jumlah) as terjual'), 'b2.nama']);
+            ->get();
 
-        $customerLoyal = DB::table('penjualan', 'pj')
-            ->join('pelanggan as p', 'p.id', '=', 'pj.idpelanggan')
+        $customerLoyal = $db->table('penjualan as pj')->select('pj.idpelanggan, COUNT(pj.id) AS jml_transaksi, p.nama')
+            ->join('pelanggan as p', 'p.id = pj.idpelanggan')
             ->groupBy(['pj.idpelanggan', 'p.nama'])
             ->orderBy('jml_transaksi', 'desc')
             ->limit(10)
-            ->get(['pj.idpelanggan', DB::raw('count(pj.id) as jml_transaksi'), 'p.nama']);
-        // dd($customerLoyal);
-        return view('admin.index', [
+            ->get();
+
+        return view('admin/index', [
             'barang' => $barangUrutStok,
             'kategori' => $kategoriUrutStok,
             'barangTerlaris' => $barangTerlaris,
