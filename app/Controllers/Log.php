@@ -21,11 +21,18 @@ class Log extends BaseController
     public function index()
     {
         // Mendapatkan Query Params
-        $cari = $this->request->getVar('q');
+        $cari = $this->request->getVar('q') ?? '';
         $entri = $this->request->getVar('entri');
-        $page = $this->request->getVar('page');
+        $page = $this->request->getVar('page') ?? 1;
         $entri = isset($entri) ? $entri : 10;
+        $offset = ($page - 1) * $entri;
 
+        $dataCount = 0;
+        $dataCount = $this->logUser->builder()->select(['COUNT(log_user.id) AS jml'])
+            ->like('menu', "%$cari%")
+            ->get()
+            ->getRow()
+            ->jml;
         if (isset($cari)) {
             $logUser = $this->logUser->builder()->select(
                 'log_user.id,
@@ -34,7 +41,7 @@ class Log extends BaseController
                 log_user.keterangan,
                 log_user.created_at',
                 false
-            )->join("user", "user.id = log_user.iduser", '', false)->like('menu', "%$cari%")->get();
+            )->join("user", "user.id = log_user.iduser", '', false)->like('menu', "%$cari%")->get($entri, $offset);
         } else {
             $logUser = $this->logUser->builder()->select(
                 'log_user.id,
@@ -43,8 +50,10 @@ class Log extends BaseController
                 log_user.keterangan,
                 log_user.created_at',
                 false
-            )->join("user", "user.id = log_user.iduser", '', false)->get();
+            )->join("user", "user.id = log_user.iduser", '', false)->get($entri, $offset);
         }
+        $pager = service('pager'); //instantiate pager
+        $pager->makeLinks($page, $entri, $dataCount);
 
         // Data yang akan dikirim
         $data = [
@@ -54,6 +63,7 @@ class Log extends BaseController
             'entri' => $entri,
             'page' => $page,
             'log' => $logUser,
+            'offset' => $offset,
         ];
 
         return view('log/index', $data);
