@@ -54,7 +54,7 @@ class Login extends BaseController
 
                 $this->logUser->insert($log);
 
-                return redirect()->to('/admin/barang');
+                return redirect()->to('/admin');
             } else {
                 $session->setFlashdata('msg', 'Password is incorrect.');
                 return redirect()->to('/');
