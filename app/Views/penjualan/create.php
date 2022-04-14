@@ -41,98 +41,98 @@ foreach ($cart as $i => $barang) {
 
 <h3 class="mb-3">Penjualan Barang</h3>
 
-<form method="POST" action="<?= base_url('') ?>/admin/penjualan" id="penjualan">
-    <?php csrf_field() ?>
+<?= form_open(base_url('/admin/penjualan'), ['id' => 'penjualan']) ?>
+<?php csrf_field() ?>
 
-    <input type="hidden" name="iduser" value="<?= $iduser ?>">
-    <div class="form-row justify-content-between">
-        <div class="form-group col-md-6">
-            <label for="exampleInputEmail1">Kasir</label>
-            <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="kasir" readonly value="<?= $s->get('nama') ?>">
-            <small id="emailHelp" class="form-text text-muted">Kasir yang bertanggungjawab</small>
-        </div>
-
-        <div class="form-group col-md-6">
-            <label for="exampleInputEmail1">Pelanggan</label>
-            <select name="idpelanggan" id="pelanggan" aria-describedby="pelangganHelp" class="form-control">
-                <?php foreach ($pelanggan as $item) : ?>
-                    <?php
-                    $selected = old('idpelanggan', $session_penjualan['idpelanggan'] ?? '');
-                    $isSelected = $item->id == $selected ? 'selected' : '';
-                    ?>
-                    <option value="<?= $item->id ?>" <?= $isSelected ?>><?= $item->nama ?></option>
-                <?php endforeach ?>
-
-            </select>
-            <small id="pelangganHelp" class="form-text text-muted">Pilih Pelanggan (opsional)</small>
-        </div>
+<input type="hidden" name="iduser" value="<?= $iduser ?>">
+<div class="form-row justify-content-between">
+    <div class="form-group col-md-6">
+        <label for="exampleInputEmail1">Kasir</label>
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="kasir" readonly value="<?= $s->get('nama') ?>">
+        <small id="emailHelp" class="form-text text-muted">Kasir yang bertanggungjawab</small>
     </div>
 
-    <div class="form-row justify-content-between">
-        <div class="form-group col-md-6">
-            <label for="exampleInputEmail1">No. Faktur</label>
-            <input placeholder="No. Faktur akan terisi secara otomatis" type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="nofaktur" readonly>
-            <small id="emailHelp" class="form-text text-muted">No. Faktur Transaksi</small>
-        </div>
+    <div class="form-group col-md-6">
+        <label for="exampleInputEmail1">Pelanggan</label>
+        <select name="idpelanggan" id="pelanggan" aria-describedby="pelangganHelp" class="form-control">
+            <?php foreach ($pelanggan as $item) : ?>
+                <?php
+                $selected = old('idpelanggan', $session_penjualan['idpelanggan'] ?? '');
+                $isSelected = $item->id == $selected ? 'selected' : '';
+                ?>
+                <option value="<?= $item->id ?>" <?= $isSelected ?>><?= $item->nama ?></option>
+            <?php endforeach ?>
 
-        <div class="form-group col-md-6">
-            <label for="exampleInputEmail1">Tanggal</label>
-            <input type="date" max="<?= date('Y-m-d') ?>" class="form-control" id="tgl" aria-describedby="emailHelp" name="tgl" value="<?= old('tgl', $session_penjualan['tgl'] ?? date('Y-m-d')) ?>">
-            <small id="emailHelp" class="form-text text-muted">Tanggal Transaksi</small>
-        </div>
+        </select>
+        <small id="pelangganHelp" class="form-text text-muted">Pilih Pelanggan (opsional)</small>
+    </div>
+</div>
+
+<div class="form-row justify-content-between">
+    <div class="form-group col-md-6">
+        <label for="exampleInputEmail1">No. Faktur</label>
+        <input placeholder="No. Faktur akan terisi secara otomatis" type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="nofaktur" readonly>
+        <small id="emailHelp" class="form-text text-muted">No. Faktur Transaksi</small>
     </div>
 
-    <div class="form-row justify-content-between">
-        <div class="form-group col-md-6">
-            <label for="exampleInputEmail1">Jumlah Bayar</label>
-            <input placeholder="Jumlah Bayar" type="number" class="form-control" id="bayar" aria-describedby="emailHelp" name="bayar" step="500" value="<?= old('bayar', $session_penjualan['bayar'] ?? '') ?>">
-            <small id="emailHelp" class="form-text text-muted">Jumlah Bayar</small>
-        </div>
+    <div class="form-group col-md-6">
+        <label for="exampleInputEmail1">Tanggal</label>
+        <input type="date" max="<?= date('Y-m-d') ?>" class="form-control" id="tgl" aria-describedby="emailHelp" name="tgl" value="<?= old('tgl', $session_penjualan['tgl'] ?? date('Y-m-d')) ?>">
+        <small id="emailHelp" class="form-text text-muted">Tanggal Transaksi</small>
+    </div>
+</div>
 
-        <div class="form-group col-md-6">
-            <label for="exampleInputEmail1">Jumlah Kembalian</label>
-            <input placeholder="Jumlah Kembali" type="text" class="form-control" id="kembali" aria-describedby="emailHelp" name="kembali" readonly value="<?= old('kembali', '') ?>">
-            <small id="emailHelp" class="form-text text-muted">Jumlah Kembali</small>
-        </div>
+<div class="form-row justify-content-between">
+    <div class="form-group col-md-6">
+        <label for="exampleInputEmail1">Jumlah Bayar</label>
+        <input placeholder="Jumlah Bayar" type="number" class="form-control" id="bayar" aria-describedby="emailHelp" name="bayar" step="500" value="<?= old('bayar', $session_penjualan['bayar'] ?? '') ?>">
+        <small id="emailHelp" class="form-text text-muted">Jumlah Bayar</small>
     </div>
 
-    <a href="#" class="btn btn-success" id="pilihbarang"><i class="fa fa-plus"></i>
-        Barang</a>
-    <button type="submit" class="btn btn-primary"><i class="fa fa-check"></i> Simpan</button>
+    <div class="form-group col-md-6">
+        <label for="exampleInputEmail1">Jumlah Kembalian</label>
+        <input placeholder="Jumlah Kembali" type="text" class="form-control" id="kembali" aria-describedby="emailHelp" name="kembali" readonly value="<?= old('kembali', '') ?>">
+        <small id="emailHelp" class="form-text text-muted">Jumlah Kembali</small>
+    </div>
+</div>
 
-    <?php if (!empty($cart)) : ?>
-        <h1 id="grandtotal" class="text-right"><?= number_format($grandTotal) ?></h1>
-        <table class="table table-striped mt-4" id="cart">
-            <thead>
-                <tr>
-                    <th>Action</th>
-                    <th>Nama</th>
-                    <th>Harga</th>
-                    <th>Jumlah</th>
-                    <th>Subtotal</th>
+<a href="#" class="btn btn-success" id="pilihbarang"><i class="fa fa-plus"></i>
+    Barang</a>
+<button type="submit" class="btn btn-primary"><i class="fa fa-check"></i> Simpan</button>
+
+<?php if (!empty($cart)) : ?>
+    <h1 id="grandtotal" class="text-right"><?= number_format($grandTotal) ?></h1>
+    <table class="table table-striped mt-4" id="cart">
+        <thead>
+            <tr>
+                <th>Action</th>
+                <th>Nama</th>
+                <th>Harga</th>
+                <th>Jumlah</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($cart as $barang) : ?>
+                <?php
+                $subtotal = $barang['jumlah'] * $barang['harga'];
+                ?>
+                <tr data-value="<?= htmlspecialchars(json_encode($barang), ENT_QUOTES, 'UTF-8') ?>">
+                    <td>
+                        <input type="hidden" name="id" value="<?= $barang['id'] ?>">
+                        <button type="button" class="btn btn-sm btn-danger hapus"><i style="" class="fa fa-trash"></i></button>
+                    </td>
+                    <td><?= $barang['nama'] ?></td>
+                    <td><?= number_format($barang['harga']) ?></td>
+                    <td>
+                        <input type="number" value="<?= old('jumlah_' . $barang['id'], $barang['jumlah']) ?>" class="form-control cart-jumlah" style="width:auto" data-value="<?= htmlspecialchars(json_encode($barang), ENT_QUOTES, 'UTF-8') ?>" name="jumlah_<?= $barang['id'] ?>" min="1">
+                    </td>
+                    <td class="cart-subtotal"><?= number_format($subtotal) ?></td>
                 </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($cart as $barang) : ?>
-                    <?php
-                    $subtotal = $barang['jumlah'] * $barang['harga'];
-                    ?>
-                    <tr data-value="<?= htmlspecialchars(json_encode($barang), ENT_QUOTES, 'UTF-8') ?>">
-                        <td>
-                            <input type="hidden" name="id" value="<?= $barang['id'] ?>">
-                            <button type="button" class="btn btn-sm btn-danger hapus"><i style="" class="fa fa-trash"></i></button>
-                        </td>
-                        <td><?= $barang['nama'] ?></td>
-                        <td><?= number_format($barang['harga']) ?></td>
-                        <td>
-                            <input type="number" value="<?= old('jumlah_' . $barang['id'], $barang['jumlah']) ?>" class="form-control cart-jumlah" style="width:auto" data-value="<?= htmlspecialchars(json_encode($barang), ENT_QUOTES, 'UTF-8') ?>" name="jumlah_<?= $barang['id'] ?>" min="1">
-                        </td>
-                        <td class="cart-subtotal"><?= number_format($subtotal) ?></td>
-                    </tr>
-                <?php endforeach ?>
-            </tbody>
-        </table>
-    <?php endif ?>
+            <?php endforeach ?>
+        </tbody>
+    </table>
+<?php endif ?>
 </form>
 
 <script>

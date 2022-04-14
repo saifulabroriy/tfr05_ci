@@ -8,6 +8,7 @@ use App\Models\PelangganModel;
 use App\Models\PenjualanModel;
 use App\Models\PenjualanDetailModel;
 use Exception;
+use PhpParser\Node\Stmt\TryCatch;
 
 class Penjualan extends BaseController
 {
@@ -46,24 +47,28 @@ class Penjualan extends BaseController
      */
     public function store()
     {
+        $db = \Config\Database::connect();
+        $req = $this->request;
         $iduser = session()->get('id');
-        $cart = collect(session()->get($iduser . '_cart') ?? []);
-        $cart = $cart->map(function ($item) use ($request) {
-            $item['jumlah'] = $request->input("jumlah_" . $item['id']);
-            return $item;
-        });
+        $cart = array(session()->get($iduser . '_cart') ?? []);
+        foreach ($cart as $c => $cart) {
+            $cart = array_map(function ($cart) use ($req) {
+                $cart['jumlah'] = $req->getPost("jumlah_" . $cart['id']);
+                return $cart;
+            }, $cart);
+        }
 
-        $head = new Penjualan();
+        $idpelanggan = $req->getPost('idpelanggan');
+        $tgl = $req->getPost('tgl');
+        $nofaktur = $this->getNofaktur();
+        $bayar = $req->getPost('bayar');
+        $kembali = $req->getPost('kembali');
 
-        $head->iduser = $iduser;
-        $head->idpelanggan = $request->input("idpelanggan");
-        $head->tgl = $request->input("tgl");
-        $head->nofaktur = $this->getNofaktur();
-        $head->bayar = $request->input("bayar");
-        $head->kembali = str_replace(",", "", $request->input("kembali"));
-        // dd($this->request->getPost(), $cart, $head);
+        $head = new PenjualanModel();
+        $head->protect(false);
+
         $after = [
-            'nofaktur' => $head->nofaktur,
+            'nofaktur' => $nofaktur,
         ];
 
         $log = [
@@ -74,44 +79,46 @@ class Penjualan extends BaseController
             'after' => json_encode($after),
         ];
 
-        DB::beginTransaction();
-        try {
-            //code...
-            $head->save();
-            $idpenjualan = $head->id;
-            $cart->each(function ($item) use ($idpenjualan) {
-                $detail = new PenjualanDetail();
-                $detail->idpenjualan = $idpenjualan;
-                $detail->idbarang = $item['id'];
-                $detail->harga = $item['harga'];
-                $detail->jumlah = $item['jumlah'];
-                $detail->subtotal = $item['harga'] * $item['jumlah'];
-                $detail->save();
-                // PenjualanDetail::create([
-                //     'idpenjualan' => $idpenjualan,
-                //     'idbarang' => $item['id'],
-                //     'harga' => $item['harga'],
-                //     'jumlah' => $item['jumlah']
-                // ]);
-            });
-
-            DB::table('log_user')->insert($log);
-            DB::commit();
-            // Clear Session
+        $db->transBegin();
+        if ($db->transStatus() === false) {
+            $db->transRollback();
+            // return redirect('/admin/penjualan')->with('error', 'Terjadi Kesalahan saat melakukan Penjualan ' . $th->getMessage());
+            return redirect()->to('admin/penjualan')->with('error', 'Terjadi Kesalahan saat melakukan Penjualan');
+        } else {
+            $head->save([
+                'iduser' => $iduser,
+                'idpelanggan' => $idpelanggan,
+                'tgl' => $tgl,
+                'nofaktur' => $nofaktur,
+                'bayar' => $bayar,
+                'kembali' => $kembali,
+            ]);
+            $idpenjualan = $head->getInsertID();
+            foreach ($cart as $i => $item) {
+                $detail = new PenjualanDetailModel();
+                $detail->protect(false);
+                $detail->save([
+                    'idpenjualan' => $idpenjualan,
+                    'idbarang' => $item['id'],
+                    'harga' => $item['harga'],
+                    'jumlah' => $item['jumlah'],
+                    'subtotal' => $item['harga'] * $item['jumlah'],
+                ]);
+            }
+            $db->table('log_user')->insert($log);
+            $db->transCommit();
             session()->set([$iduser . '_cart' => []]);
             session()->set([$iduser . '_penjualan' => []]);
-            return redirect('/admin/penjualan')->with('success', 'Penjualan berhasil');
-        } catch (Exception $th) {
-            DB::rollBack();
-            return redirect('/admin/penjualan')->with('error', 'Terjadi Kesalahan saat melakukan Penjualan ' . $th->getMessage());
+            return redirect()->to('/admin/penjualan')->with('success', 'Penjualan berhasil');
         }
     }
 
     protected function getNoFaktur()
     {
+        $db = \Config\Database::connect();
         $now = date('Y-m-d');
-        $data = DB::select("SELECT IF(ISNULL(MAX(nofaktur)),\"0001\",LPAD(CONVERT(RIGHT(MAX(nofaktur), 4), UNSIGNED INT)+1, 4, 0))AS nofaktur
-            FROM penjualan WHERE tgl BETWEEN \"$now 00:00:00\" AND \"$now 23:59:59\"");
+        $data = $db->query("SELECT IF(ISNULL(MAX(nofaktur)),\"0001\",LPAD(CONVERT(RIGHT(MAX(nofaktur), 4), UNSIGNED INT)+1, 4, 0))AS nofaktur
+        FROM penjualan WHERE tgl BETWEEN \"$now 00:00:00\" AND \"$now 23:59:59\"")->getResult();
         $urut = $data[0]->nofaktur;
         $tgl = date('Ymd');
         return "PJ" . $tgl . $urut;
