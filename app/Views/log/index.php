@@ -57,7 +57,7 @@ if (session()->has('success')) : ?>
             <tbody>
                 <?php foreach ($log->getResult() as $i => $log) : ?>
                     <tr>
-                        <th scope="row"><?= $i + 1 ?></th>
+                        <th scope="row"><?= $offset + $i + 1 ?></th>
                         <td> <?= $log->user ?></td>
                         <td> <?= $log->menu ?></td>
                         <td> <?= $log->keterangan ?></td>

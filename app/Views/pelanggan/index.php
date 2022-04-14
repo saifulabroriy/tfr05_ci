@@ -67,7 +67,7 @@ if (session()->has('success')) : ?>
             <tbody>
                 <?php foreach ($pelanggan->getResult() as $i => $pelanggan) : ?>
                     <tr>
-                        <th scope="row"><?= $i + 1 ?></th>
+                        <th scope="row"><?= $offset + $i + 1 ?></th>
                         <td> <?= $pelanggan->nama ?></td>
                         <td> <?= $pelanggan->alamat ?></td>
                         <td> <?= $pelanggan->notelp ?></td>
