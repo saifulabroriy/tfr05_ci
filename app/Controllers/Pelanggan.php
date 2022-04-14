@@ -25,22 +25,31 @@ class Pelanggan extends BaseController
     public function index()
     {
         // Mendapatkan Query Params
-        $cari = $this->request->getVar('q');
+        $cari = $this->request->getVar('q') ?? '';
         $entri = $this->request->getVar('entri');
-        $page = $this->request->getVar('page');
+        $page = $this->request->getVar('page') ?? 1;
         $entri = isset($entri) ? $entri : 10;
+        $offset = ($page - 1) * $entri;
 
+        $dataCount = 0;
+        $dataCount = $this->pelanggan->builder()->select(['COUNT(pelanggan.id) AS jml'])
+            ->like('nama', "%$cari%")
+            ->get()
+            ->getRow()
+            ->jml;
         if (isset($cari)) {
             $pelanggan = $this->pelanggan->builder()->select(
                 '*',
                 false
-            )->like('nama', "%$cari%")->get();
+            )->like('nama', "%$cari%")->get($entri, $offset);
         } else {
             $pelanggan = $this->pelanggan->builder()->select(
                 '*',
                 false
-            )->get();
+            )->get($entri, $offset);
         }
+        $pager = service('pager'); //instantiate pager
+        $pager->makeLinks($page, $entri, $dataCount);
 
         // Data yang akan dikirim
         $data = [
@@ -50,6 +59,7 @@ class Pelanggan extends BaseController
             'entri' => $entri,
             'page' => $page,
             'pelanggan' => $pelanggan,
+            'offset' => $offset
         ];
 
         return view('pelanggan/index', $data);
